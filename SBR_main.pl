@@ -3,40 +3,52 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use vars qw/@RaceTrack %CARS/;
+use vars qw/@RaceTrack %CARS @CurrentTrack/;
 
 
 @RaceTrack = readin_textfile();
-#   print Dumper(@RaceTrack);
+# print Dumper(@RaceTrack);
 
 %CARS = ( Fab => undef,
 	  Stef => undef,
 	  Test => undef,);
 
 # Find possible Start Positions, find End positions
-my @CurrentTrack = process_matrix(\@RaceTrack, \%CARS);
+
+for (0..3) {
+   @CurrentTrack = update_car_positions(\@RaceTrack, \%CARS);
+
+ print Dumper(%CARS);
+
+}
 
 
-sub process_matrix {
+
+sub update_car_positions {
     my @newtrack = @{shift()};
     my %cars = %{shift()};
+    my $height = $#newtrack;
 
     foreach my $car (keys %cars) { 
-       if (defined($cars{$car})) {
-          print "strange\n";
-       } else {
+       if (defined($cars{$car})) { 	# Main Position update
+          print "CHECK\n";
+          foreach my $car (keys %cars) {
+             print Dumper($cars{$car})."\n";
+          }
+          
+       } else { 			# Only for initialization!
           my $count=0;
-          foreach (@{$newtrack[-1]}) {
+          foreach (@{$newtrack[$height]}) {
              if ($_ eq 1) {
-                 $newtrack[-1]->[$count] = substr($car, 0, 1);
+                 $newtrack[$height]->[$count] = substr($car, 0, 1);
+                 $CARS{$car}=["$height","$count","0","0"];			# MAIN!!!
                  last;
              }
              $count++;
           }
+          print "@{$newtrack[-1]}\n";
        }
     }
-
- print "@{$newtrack[-1]}\n";
  return @newtrack;
 }
 
